@@ -1,22 +1,23 @@
 const express = require("express");
 const router = express.Router();
-
 const Comment = require("../schemas/comment.js");
 const Post = require("../schemas/post.js");
+const authMiddleware = require("../middlewares/auth-middleware");
 
 //  ---------------- 여기부터 API 시작 ----------------
 
-router.post("/:_postId", async (req, res) => {
+router.post("/:_postId",authMiddleware, async (req, res) => {  
   const { _postId } = req.params;
   
   const { user, password, content } = req.body;
   
   if (!content) {
     return res.json({ message: "댓글 내용을 입력해주세요" });
-  }
+  };
+
   
   const posts = await Post.find({ _id: _postId });
-  
+ 
   if (!posts.length) {
     return res.json({ message: "해당 게시글이 없습니다." });
   }
@@ -60,7 +61,7 @@ router.get("/:_postId", async (req, res) => {
 });
 
 
-router.put("/:_commentId", async (req, res) => {
+router.put("/:_commentId", authMiddleware, async (req, res) => {
   
   const { _commentId } = req.params;
   
@@ -102,7 +103,7 @@ router.put("/:_commentId", async (req, res) => {
 });
 
 
-router.delete("/:_commentId", async (req, res) => {
+router.delete("/:_commentId", authMiddleware, async (req, res) => {
   
   const { _commentId } = req.params;
   

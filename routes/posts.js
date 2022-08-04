@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const authMiddleware = require("../middlewares/auth-middleware");
 const Post = require("../schemas/post.js");
 
 //  ---------------- 여기부터 API 시작 ----------------
@@ -18,6 +18,8 @@ router.get("/", async (req, res) => {
       user: dataAll[i].user,
       title: dataAll[i].title,
       createdAt: dataAll[i].createdAt,
+      updatedAt: dataAll[i].updatedAt,
+      likes: post.likedBy.split(" ").length-1,
     });
   }
 
@@ -25,9 +27,10 @@ router.get("/", async (req, res) => {
 });
 
 
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   
   const { user, password, title, content } = req.body;
+  const likeBy = "";
 
   
   await Post.create({
@@ -35,7 +38,8 @@ router.post("/", async (req, res) => {
     password,
     title,
     content,
-    createdAt: new Date(), 
+    createdAt: new Date(),
+    likeBy 
   });
 
   
@@ -159,6 +163,7 @@ router.post("/many", async (req, res) => {
 
   res.json({ message: "게시글을 생성하였습니다." });
 });
+
 
 
 module.exports = router;
